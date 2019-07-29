@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker stop auto_clf_jupyter
+docker stop lm_jupyter
 sleep 5
 
 ./docker/jupyter.sh
