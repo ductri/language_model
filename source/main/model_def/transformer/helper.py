@@ -9,7 +9,7 @@ def create_padding_mask(seq_len, max_len):
     :param seq_len: (batch)
     :return: (batch, max_len)
     """
-    mask = pytorch_utils.length_to_mask(seq_len, max_len=max_len)
+    mask = pytorch_utils.length_to_mask(seq_len, max_len=max_len).to(seq_len.device)
     mask = (mask == 0).float()  # reverse 0 and 1 values
     # (batch, 1, 1, max_len)
     return mask[:, None, None, :]

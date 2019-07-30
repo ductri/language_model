@@ -34,7 +34,7 @@ class Model(nn.Module):
         """
         x = self.word_embedding(x)
         dec_out = x
-        look_ahead_mask = helper.create_look_ahead_mask(x.size(1))
+        look_ahead_mask = helper.create_look_ahead_mask(x.size(1)).to(x.device)
         padding_mask = helper.create_padding_mask(seq_len, x.size(1))
         for i in range(len(self.decoder)):
             dec_out, _ = self.decoder[i](dec_out, look_ahead_mask, padding_mask)
