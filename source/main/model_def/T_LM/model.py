@@ -42,3 +42,6 @@ class Model(nn.Module):
         logits = self.lm_layer.get_logits(dec_out)
         return logits
 
+    @staticmethod
+    def get_word_embedding():
+        return nn.Embedding(30000, embedding_dim=512)

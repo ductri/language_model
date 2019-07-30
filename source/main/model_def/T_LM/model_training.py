@@ -51,4 +51,4 @@ class ModelTraining(nn.Module):
         return loss.item()
 
     def get_lr(self):
-        pass
+        return 4e-3

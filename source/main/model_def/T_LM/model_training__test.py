@@ -16,7 +16,7 @@ class TestEncoder(unittest.TestCase):
         batch = 10
         x = torch.randint(1000, size=(batch, 100))
         seq_len = torch.randint(low=10, high=100, size=(batch,))
-        for i in range(100):
+        for i in range(50):
             loss = model_training.train_batch(x, seq_len)
             if i % 10 == 0:
                 model.eval()
@@ -28,7 +28,7 @@ class TestEncoder(unittest.TestCase):
 
         model.eval()
         pred = model(x, seq_len)
-        self.assertEqual((x[:, :10] != pred[:, :10]).sum(), 0)
+        self.assertEqual((x[:, 1:10] != pred[:, :9]).sum(), 0)
 
 
 if __name__ == '__main__':
