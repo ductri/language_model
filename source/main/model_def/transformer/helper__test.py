@@ -9,7 +9,7 @@ class TestEncoderLayer(unittest.TestCase):
 
     def test_create_padding_mask(self):
         source_seq_len = torch.Tensor([2, 5])
-        mask = helper.create_padding_mask(source_seq_len=source_seq_len, max_len=7)
+        mask = helper.create_padding_mask(seq_len=source_seq_len, max_len=7)
         expected_mask = torch.Tensor([[0, 0, 1, 1, 1, 1, 1],
                                       [0, 0, 0, 0, 0, 1, 1]])
         expected_mask = expected_mask[:, None, None, :]
