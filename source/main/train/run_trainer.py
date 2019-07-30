@@ -33,7 +33,7 @@ if __name__ == '__main__':
     train_loader, eval_loader = my_dataset.get_datasets()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = Model(Model.get_word_embedding(), d_model=512, num_layers=6, num_heads=8, rate=0.1)
+    model = Model(Model.get_word_embedding(my_dataset.voc.get_embedding_weights()), d_model=512, num_layers=6, num_heads=8, rate=0.1)
     model.to(device)
     logging.info('Total trainable parameters: %s', pytorch_utils.count_parameters(model))
     model_training = ModelTraining(model)

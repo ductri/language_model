@@ -43,5 +43,8 @@ class Model(nn.Module):
         return logits
 
     @staticmethod
-    def get_word_embedding():
-        return nn.Embedding(30000, embedding_dim=512)
+    def get_word_embedding(weights=None):
+        if weights is None:
+            return nn.Embedding(30000, embedding_dim=512)
+        else:
+            return nn.Embedding.from_pretrained(weights)
