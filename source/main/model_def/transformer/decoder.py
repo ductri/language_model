@@ -16,12 +16,13 @@ class Decoder(nn.Module):
         self.decoder_layers = nn.ModuleList(DecoderLayer(d_model, num_heads, rate) for _ in range(num_layers))
         self.dropout = nn.Dropout(rate)
 
-    def forward(self, word_input, encoder_output, look_ahead_mask, source_padding_mask, *input):
+    def forward(self, word_input, encoder_output, look_ahead_mask, source_padding_mask, target_padding_mask, *input):
         """
 
         :param word_input: (batch, max_seq_len)
         :param encoder_output: (batch, target_seq_len, d_model)
         :param source_padding_mask: Provide info about length
+        :param target_padding_mask: Provide info about length
         :param input:
         :return:
         """
@@ -31,7 +32,7 @@ class Decoder(nn.Module):
         x = self.dropout(x)
 
         for i in range(self.num_layers):
-            x, block1, block2 = self.decoder_layers[i](x, encoder_output, look_ahead_mask, source_padding_mask)
+            x, block1, block2 = self.decoder_layers[i](x, encoder_output, look_ahead_mask, source_padding_mask, target_padding_mask)
 
         # (batch, target_seq_len, d_model)
         return x

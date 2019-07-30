@@ -27,8 +27,11 @@ class DecoderLayerCustomized(nn.Module):
         # (batch, target_seq_len, d_model)
         if target_padding_mask is None and look_ahead_mask is None:
             combined_mask = None
-        else:
+        elif target_padding_mask is not None and look_ahead_mask is not None:
             combined_mask = torch.max(target_padding_mask, look_ahead_mask)
+        else:
+            combined_mask = target_padding_mask if target_padding_mask is not None else look_ahead_mask
+
         attn1, attn_weights_block1 = self.mha(word_input, word_input, word_input, mask=combined_mask)
         attn1 = self.dropout1(attn1)
         out1 = F.layer_norm(word_input + attn1, normalized_shape=[attn1.size(-1)])
