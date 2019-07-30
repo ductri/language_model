@@ -55,11 +55,10 @@ class MultiHeadAttention(nn.Module):
         v = self.split_head(v)
 
         # attn: (batch, num_head, seq_len_q, depth_v)
-        attn, attn_weights= MultiHeadAttention.scaled_dot_product_attention(q, k, v, mask=mask)
-
+        attn, attn_weights = MultiHeadAttention.scaled_dot_product_attention(q, k, v, mask=mask)
         # (batch, seq_len_q, num_head, depth_v)
         attn = attn.permute(0, 2, 1, 3)
-
+        attn = attn.contiguous()
         # (batch, seq_len_q, d_model)
         attn = attn.view(attn.size(0), attn.size(1), self.d_model)
 
@@ -81,7 +80,7 @@ class MultiHeadAttention(nn.Module):
         assert k.size(1) == v.size(1)
 
         # (..., seq_len_q, seq_len_k)
-        attn = q.matmul(k.permute(0, 2, 1))
+        attn = q.matmul(k.transpose(-1, -2))
         attn = attn / np.sqrt(q.size(-1))
 
         # add the mask to the scaled tensor.
@@ -91,14 +90,12 @@ class MultiHeadAttention(nn.Module):
         # (..., seq_len_q, seq_len_k)
         attn_weights = F.softmax(attn, dim=-1)
 
-        batch = attn_weights.size(0)
-
         # (..., seq_len_q, seq_len_k, 1)
         # *
         # (..., 1        , seq_len_v, depth_v)
-        output = torch.mul(attn.view(*attn_weights.size(), 1), v.view(batch, 1, v.size(1), v.size(2)))
+        output = torch.mul(attn_weights[..., :, :, None], v[..., None, :, :])
 
         # (..., seq_len_q, depth_v)
-        output = output.sum(dim=2)
+        output = output.sum(dim=-2)
 
         return output, attn_weights

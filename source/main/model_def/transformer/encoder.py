@@ -1,5 +1,5 @@
 from torch import nn
-import torch
+import numpy as np
 
 from model_def.transformer.encoder_layer import EncoderLayer
 from model_def.transformer.position_embedding import PositionalEncoding
@@ -24,7 +24,7 @@ class Encoder(nn.Module):
         :return:
         """
         x = self.word_embedding(word_input)
-        x *= torch.sqrt(self.d_model)
+        x *= np.sqrt(self.d_model)
         x = self.pos_embedding(x)
         x = self.dropout(x)
 

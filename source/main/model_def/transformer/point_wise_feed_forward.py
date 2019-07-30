@@ -7,8 +7,8 @@ import numpy as np
 class PointWiseFeedForward(nn.Module):
     def __init__(self, d_model):
         super(PointWiseFeedForward, self).__init__()
-        self.dense1 = nn.Linear(d_model, d_model)
-        self.dense2 = nn.Linear(d_model, d_model)
+        self.dense1 = nn.Linear(d_model, 2048)
+        self.dense2 = nn.Linear(2048, d_model)
 
     def forward(self, input, *args):
         """

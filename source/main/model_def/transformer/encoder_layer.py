@@ -27,6 +27,6 @@ class EncoderLayer(nn.Module):
 
         ffn_output = self.ffn(out1)
         ffn_output = self.dropout2(ffn_output)
-        out2 = F.layer_norm(out1 + ffn_output)
+        out2 = F.layer_norm(out1 + ffn_output, normalized_shape=[out1.size(-1)])
 
         return out2

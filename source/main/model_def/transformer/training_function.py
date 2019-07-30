@@ -1,7 +1,7 @@
 from torch import nn, optim
 import torch
 
-from utils import pytorch_utils
+from naruto_skills import pytorch_utils
 
 
 class TrainingFunction(nn.Module):
