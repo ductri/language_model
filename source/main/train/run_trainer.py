@@ -12,7 +12,7 @@ from train.trainer import train
 
 
 def tensor2text(x, seq_len):
-    pred = my_dataset.voc_src.idx2docs(x)
+    pred = my_dataset.voc.idx2docs(x)
     return [' '.join(doc.split()[:length]) for doc, length in zip(pred, seq_len)]
 
 
@@ -23,10 +23,10 @@ if __name__ == '__main__':
     ROOT_DIR = '/source/main/train/output/'
     BATCH_SIZE = 64
     NUM_EPOCHS = 100
-    NUM_WORKERS = 2
-    PRINT_EVERY = 10
-    PREDICT_EVERY = 300
-    EVAL_EVERY = 100
+    NUM_WORKERS = 0
+    PRINT_EVERY = 100
+    PREDICT_EVERY = 1000
+    EVAL_EVERY = 5000
     PRE_TRAINED_MODEL = ''
 
     my_dataset.bootstrap()

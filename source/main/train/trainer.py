@@ -32,12 +32,12 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
 
     t_loss_mean_tag = 'train/loss_mean'
     t_loss_std_tag = 'train/loss_std'
-    t_ppl_mean = 'train/ppl_mean'
-    t_ppl_std = 'train/ppl_std'
+    t_ppl_mean_tag = 'train/ppl_mean'
+    t_ppl_std_tag = 'train/ppl_std'
     e_loss_mean_tag = 'eval/loss_mean'
     e_loss_std_tag = 'eval/loss_std'
-    e_ppl_mean = 'eval/ppl_mean'
-    e_ppl_std = 'eval/ppl_std'
+    e_ppl_mean_tag = 'eval/ppl_mean'
+    e_ppl_std_tag = 'eval/ppl_std'
     lr_tag = 'lr'
     train_duration_tag = 'train/step_duration'
     eval_duration_tag = 'eval/step_duration'
@@ -59,8 +59,8 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
                     model.eval()
                     my_logger.add_scalar(t_loss_mean_tag, np.mean(t_loss_tracking), step)
                     my_logger.add_scalar(t_loss_std_tag, np.std(t_loss_tracking), step)
-                    my_logger.add_scalar(t_ppl_mean, np.mean(t_ppl_tracking), step)
-                    my_logger.add_scalar(t_ppl_std, np.std(t_ppl_tracking), step)
+                    my_logger.add_scalar(t_ppl_mean_tag, np.mean(t_ppl_tracking), step)
+                    my_logger.add_scalar(t_ppl_std_tag, np.std(t_ppl_tracking), step)
                     my_logger.add_scalar(lr_tag, training_model.get_lr(), step)
                     my_logger.add_scalar(train_duration_tag, time.time() - start, step)
                     t_loss_tracking.clear()
@@ -71,7 +71,7 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
 
                     logging.info('\n\n------------------ Predict samples from train ------------------ ')
                     logging.info('Step: %s', step)
-                    predict_and_print_sample(*inputs)
+                    predict_and_print_sample(inputs)
 
                 if step % eval_every == 0:
                     model.eval()
@@ -81,6 +81,7 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
                     for eval_inputs in eval_loader:
                         eval_inputs = [i.to(device) for i in eval_inputs]
                         e_loss = training_model.get_loss(eval_inputs[0], eval_inputs[1])
+                        e_loss = e_loss.cpu().item()
                         e_loss_tracking.append(e_loss)
                         e_ppl_tracking.append(np.exp(e_loss))
 
@@ -88,8 +89,8 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
                     logging.info('Number of batchs: %s', len(e_loss_tracking))
                     my_logger.add_scalar(e_loss_mean_tag, np.mean(e_loss_tracking), step)
                     my_logger.add_scalar(e_loss_std_tag, np.std(e_loss_tracking), step)
-                    my_logger.add_scalar(e_ppl_mean, np.mean(e_ppl_tracking), step)
-                    my_logger.add_scalar(e_ppl_std, np.std(e_ppl_std), step)
+                    my_logger.add_scalar(e_ppl_mean_tag, np.mean(e_ppl_tracking), step)
+                    my_logger.add_scalar(e_ppl_std_tag, np.std(e_ppl_tracking), step)
                     my_logger.add_scalar(eval_duration_tag, time.time()-start, step)
 
                     training_checker.update(-np.mean(e_loss_tracking), step)
@@ -98,6 +99,6 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
 
                     eval_inputs = next(iter(eval_loader))
                     eval_inputs = [item.to(device) for item in eval_inputs]
-                    predict_and_print_sample(*eval_inputs)
+                    predict_and_print_sample(eval_inputs)
 
 
