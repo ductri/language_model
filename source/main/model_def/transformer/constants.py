@@ -1,3 +1,3 @@
-voc_path = 'main/vocab/output/voc_1.0'
+voc_path = '/source/main/vocab/output/voc_v1'
 
 MAX_LEN = 100

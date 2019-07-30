@@ -47,4 +47,4 @@ class Model(nn.Module):
         if weights is None:
             return nn.Embedding(30000, embedding_dim=512)
         else:
-            return nn.Embedding.from_pretrained(weights)
+            return nn.Embedding.from_pretrained(torch.from_numpy(weights).float())

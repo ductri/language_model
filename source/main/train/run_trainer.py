@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     EXP_ID = '1.0'
     ROOT_DIR = '/source/main/train/output/'
-    BATCH_SIZE = 32
+    BATCH_SIZE = 64
     NUM_EPOCHS = 100
     NUM_WORKERS = 2
     PRINT_EVERY = 10
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     PRE_TRAINED_MODEL = ''
 
     my_dataset.bootstrap()
-    train_loader, eval_loader = my_dataset.get_datasets()
+    train_loader, eval_loader = my_dataset.get_datasets(BATCH_SIZE)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = Model(Model.get_word_embedding(my_dataset.voc.get_embedding_weights()), d_model=512, num_layers=6, num_heads=8, rate=0.1)
@@ -56,4 +56,4 @@ if __name__ == '__main__':
 
         logging.info('Load pre-trained model from %s successfully', PRE_TRAINED_MODEL)
 
-    train(model_training, train_loader, eval_loader, device=device, num_epoch=NUM_EPOCHS, print_every=PRINT_EVERY, predict_every=PREDICT_EVERY, eval_every=EVAL_EVERY, input_transform=tensor2text, output_transform=tensor2text, init_step=init_step)
+    train(model_training, train_loader, eval_loader, device=device, num_epoch=NUM_EPOCHS, print_every=PRINT_EVERY, predict_every=PREDICT_EVERY, eval_every=EVAL_EVERY, input_transform=tensor2text, output_transform=tensor2text, init_step=init_step, my_logger=my_logger, training_checker=training_checker)
