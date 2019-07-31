@@ -7,8 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 from naruto_skills.new_voc import Voc
 
-from model_def.transformer import constants
-
+from model_def.T_LM import constants
 
 voc = None
 NUM_WORKERS = 0
@@ -62,6 +61,7 @@ def get_datasets(batch_size=64):
     df['text'] = df['text'].map(lambda x: ' '.join(x.split()[:constants.MAX_LEN]))
     docs = list(df['text'])
     docs = Docs(docs)
+    logging.info('Data train size: %s', len(docs))
     train_loader = DataLoader(docs, batch_size=batch_size, shuffle=True, num_workers=0, collate_fn=collate_fn)
     logging.info('TRAIN: There will be %s step/epoch', len(train_loader))
 
@@ -71,6 +71,7 @@ def get_datasets(batch_size=64):
     df['text'] = df['text'].map(lambda x: ' '.join(x.split()[:constants.MAX_LEN]))
     docs = list(df['text'])
     docs = Docs(docs)
+    logging.info('Data test size: %s', len(docs))
     eval_loader = DataLoader(docs, batch_size=batch_size, shuffle=False, num_workers=0, collate_fn=collate_fn)
     logging.info('TEST: There will be %s step/epoch', len(eval_loader))
 

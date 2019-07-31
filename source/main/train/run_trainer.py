@@ -19,9 +19,9 @@ def tensor2text(x, seq_len):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    EXP_ID = '1.0'
+    EXP_ID = '1.1'
     ROOT_DIR = '/source/main/train/output/'
-    BATCH_SIZE = 64
+    BATCH_SIZE = 32
     NUM_EPOCHS = 100
     NUM_WORKERS = 0
     PRINT_EVERY = 100
