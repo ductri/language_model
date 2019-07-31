@@ -19,7 +19,7 @@ def tensor2text(x, seq_len):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    EXP_ID = '1.1'
+    EXP_ID = '1.7'
     ROOT_DIR = '/source/main/train/output/'
     BATCH_SIZE = 32
     NUM_EPOCHS = 100
@@ -33,7 +33,8 @@ if __name__ == '__main__':
     train_loader, eval_loader = my_dataset.get_datasets(BATCH_SIZE)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = Model(Model.get_word_embedding(my_dataset.voc.get_embedding_weights()), d_model=512, num_layers=6, num_heads=8, rate=0.1)
+    #device = torch.device('cpu')
+    model = Model(Model.get_word_embedding(), d_model=640, num_layers=10, num_heads=10, rate=0.1)
     model.to(device)
     logging.info('Total trainable parameters: %s', pytorch_utils.count_parameters(model))
     model_training = ModelTraining(model)
