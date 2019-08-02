@@ -14,8 +14,9 @@ class LayerLM(nn.Module):
         :param args:
         :return:
         """
-        logits = self.get_logits(x)
-        return torch.argmax(logits, dim=-1)
+        with torch.no_grad():
+            logits = self.get_logits(x)
+            return torch.argmax(logits, dim=-1)
 
     def get_logits(self, x):
         return self.fc(x)

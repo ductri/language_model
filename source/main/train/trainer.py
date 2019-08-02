@@ -20,13 +20,16 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
         look_ahead = 6
         input_tensors = [input_tensor[:sample_size] for input_tensor in inputs]
         predict_tensor = model(input_tensors[0][:, :look_ahead], max_length=constants.MAX_LEN)
-        input_transformed = input_transform(input_tensors[0].cpu().numpy(), input_tensors[1].cpu().numpy())
+
+        input_transformed = input_transform(input_tensors[0][:, :look_ahead].cpu().numpy(), input_tensors[1].cpu().numpy())
+        target_transformed = input_transform(input_tensors[0].cpu().numpy(), input_tensors[1].cpu().numpy())
         predict_transformed = output_transform(predict_tensor.cpu().numpy(), input_tensors[1].cpu().numpy())
 
-        for idx, (src, pred) in enumerate(zip(input_transformed, predict_transformed)):
+        for idx, (inp, tar, pred) in enumerate(zip(input_transformed, target_transformed, predict_transformed)):
             logging.info('Sample %s ', idx + 1)
-            logging.info('Source:\t%s', src)
+            logging.info('Input:\t%s', inp)
             logging.info('Predict:\t%s', pred)
+            logging.info('Target:\t%s', tar)
             logging.info('------')
 
     t_loss_tracking = []

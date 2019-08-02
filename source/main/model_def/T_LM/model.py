@@ -24,21 +24,22 @@ class Model(nn.Module):
         :param args:
         :return:
         """
-        current_tok = torch.tensor([-100])
-        batch_size = initial_words.size(0)
-        seq_len = torch.ones(batch_size).int().to(initial_words.device) * max_length
+        with torch.no_grad():
+            current_tok = torch.tensor([-100])
+            batch_size = initial_words.size(0)
+            seq_len = torch.ones(batch_size).int().to(initial_words.device) * max_length
 
-        # (batch, initial_length + 1)
-        input_words = F.pad(initial_words, pad=(1, 0), value=self.bos_id)
-        input_words = F.pad(input_words, pad=(0, max_length-input_words.size(-1)+1), value=0)
-        current_length = initial_words.size(-1)
+            # (batch, initial_length + 1)
+            input_words = F.pad(initial_words, pad=(1, 0), value=self.bos_id)
+            input_words = F.pad(input_words, pad=(0, max_length-input_words.size(-1)+1), value=0)
+            current_length = initial_words.size(-1)
 
-        while current_length+1 <= max_length and (current_tok != self.eos_id).sum().cpu() != 0:
-            logits = self.get_logits(input_words, seq_len=seq_len)
-            current_tok = torch.argmax(logits[:, current_length], dim=-1)
-            input_words[:, current_length+1] = current_tok
-            current_length += 1
-        return input_words[:, 1:]
+            while current_length+1 <= max_length and (current_tok != self.eos_id).sum().cpu() != 0:
+                logits = self.get_logits(input_words, seq_len=seq_len)
+                current_tok = torch.argmax(logits[:, current_length], dim=-1)
+                input_words[:, current_length+1] = current_tok
+                current_length += 1
+            return input_words[:, 1:]
 
     def get_logits(self, x, seq_len):
         """
