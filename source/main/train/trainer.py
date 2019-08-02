@@ -8,8 +8,7 @@ from model_def.T_LM import constants
 
 
 def train(training_model, train_loader, eval_loader, device, num_epoch=10, print_every=1000, predict_every=500,
-          eval_every=500, input_transform=None, output_transform=None, init_step=0, training_checker=None, my_logger=None,
-          bos_id=None, eos_id=None):
+          eval_every=500, input_transform=None, output_transform=None, init_step=0, training_checker=None, my_logger=None):
     if input_transform is None:
         input_transform = lambda *x: x
     if output_transform is None:
@@ -18,8 +17,9 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
 
     def predict_and_print_sample(inputs):
         sample_size = 5
+        look_ahead = 6
         input_tensors = [input_tensor[:sample_size] for input_tensor in inputs]
-        predict_tensor = model(input_tensors[0][:, :6], max_length=constants.MAX_LEN, bos_id=bos_id, eos_id=eos_id)
+        predict_tensor = model(input_tensors[0][:, :look_ahead], max_length=constants.MAX_LEN)
         input_transformed = input_transform(input_tensors[0].cpu().numpy(), input_tensors[1].cpu().numpy())
         predict_transformed = output_transform(predict_tensor.cpu().numpy(), input_tensors[1].cpu().numpy())
 

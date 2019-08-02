@@ -62,6 +62,6 @@ class Model(nn.Module):
     @staticmethod
     def get_word_embedding(weights=None):
         if weights is None:
-            return nn.Embedding(40000, embedding_dim=640)
+            return nn.Embedding(30000, embedding_dim=640)
         else:
             return nn.Embedding.from_pretrained(torch.from_numpy(weights).float())

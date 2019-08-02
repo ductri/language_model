@@ -50,8 +50,7 @@ if __name__ == '__main__':
     train_loader, eval_loader = my_dataset.get_datasets(BATCH_SIZE)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    #device = torch.device('cpu')
-    model = Model(Model.get_word_embedding(), d_model=constants.d_model, num_layers=constants.num_layers, num_heads=constants.num_heads, rate=constants.rate)
+    model = Model(Model.get_word_embedding(), d_model=constants.d_model, num_layers=constants.num_layers, num_heads=constants.num_heads, rate=constants.rate, bos_id=2, eos_id=3)
     model.to(device)
     logging.info('Total trainable parameters: %s', pytorch_utils.count_parameters(model))
     model_training = ModelTraining(model)
@@ -74,4 +73,4 @@ if __name__ == '__main__':
 
         logging.info('Load pre-trained model from %s successfully', PRE_TRAINED_MODEL)
 
-    train(model_training, train_loader, eval_loader, device=device, num_epoch=NUM_EPOCHS, print_every=PRINT_EVERY, predict_every=PREDICT_EVERY, eval_every=EVAL_EVERY, input_transform=tensor2text, output_transform=tensor2text, init_step=init_step, my_logger=my_logger, training_checker=training_checker, bos_id=2, eos_id=3)
+    train(model_training, train_loader, eval_loader, device=device, num_epoch=NUM_EPOCHS, print_every=PRINT_EVERY, predict_every=PREDICT_EVERY, eval_every=EVAL_EVERY, input_transform=tensor2text, output_transform=tensor2text, init_step=init_step, my_logger=my_logger, training_checker=training_checker)
