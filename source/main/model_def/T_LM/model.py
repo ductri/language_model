@@ -22,9 +22,8 @@ class Model(nn.Module):
         :param args:
         :return:
         """
-        assert initial_words.size(0) == 1
 
-        current_tok = -100
+        current_tok = torch.tensor([-100])
 
         # (batch, initial_length + 1)
         input_words = F.pad(initial_words, pad=(1, 0), value=bos_id)
@@ -32,7 +31,7 @@ class Model(nn.Module):
         current_length = initial_words.size(0) + 2
         batch_size = initial_words.size(0)
         # import pdb; pdb.set_trace()
-        while current_length < max_length and current_tok != eos_id:
+        while current_length < max_length and (current_tok != eos_id).sum().cpu() == 0:
             logits = self.get_logits(input_words, seq_len=torch.ones(batch_size).int().to(initial_words.device) * current_length)
             current_tok = torch.argmax(logits[:, current_length-1], dim=-1)
             input_words[:, current_length-1] = current_tok

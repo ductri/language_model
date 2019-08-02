@@ -19,7 +19,16 @@ def tensor2text(x, seq_len):
     :return:
     """
     x = x.tolist()
-    pred = [my_dataset.voc.decode_ids(doc) for doc in x]
+    docs = []
+    for list_toks in x:
+        doc = []
+        for tok in list_toks:
+            if tok != my_dataset.voc.eos_id():
+                doc.append(tok)
+            else:
+                break
+        docs.append(doc)
+    pred = [my_dataset.voc.decode_ids(doc) for doc in docs]
     return pred
 
 
@@ -31,13 +40,13 @@ if __name__ == '__main__':
     BATCH_SIZE = 32
     NUM_EPOCHS = 10
     NUM_WORKERS = 0
-    PRINT_EVERY = 100
-    PREDICT_EVERY = 5000
+    PRINT_EVERY = 10
+    PREDICT_EVERY = 100
     EVAL_EVERY = 10000
     PRE_TRAINED_MODEL = ''
 
     my_dataset.bootstrap()
-    train_loader, eval_loader = my_dataset.get_datasets_2(BATCH_SIZE)
+    train_loader, eval_loader = my_dataset.get_datasets(BATCH_SIZE)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     #device = torch.device('cpu')

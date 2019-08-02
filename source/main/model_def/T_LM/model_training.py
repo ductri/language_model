@@ -8,7 +8,8 @@ class ModelTraining(nn.Module):
         super(ModelTraining, self).__init__()
         self.model = model
         self.loss_fn = nn.CrossEntropyLoss(reduction='none')
-        self.optimizer = optim.Adam(params=self.model.parameters(), lr=1e-4)
+        self.lr = 1e-2
+        self.optimizer = optim.Adam(params=self.model.parameters(), lr=self.lr)
 
     def forward(self, *args):
         """
@@ -51,4 +52,4 @@ class ModelTraining(nn.Module):
         return loss.item()
 
     def get_lr(self):
-        return 4e-3
+        return self.lr

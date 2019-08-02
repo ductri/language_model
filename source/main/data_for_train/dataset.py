@@ -65,7 +65,7 @@ def collate_fn(list_data):
 
 
 def get_ds_from_csv(path):
-    df = pd.read_csv(path, lineterminator='\n')
+    df = pd.read_csv(path, lineterminator='\n', nrows=1000)
     docs = list(df['text'])
     docs = Docs(docs)
     logging.info('Data at %s has size: %s', path, len(docs))
