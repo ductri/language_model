@@ -32,15 +32,16 @@ class TestEncoder(unittest.TestCase):
         pred = model(x[:, :3], max_len)
         self.assertEqual((x != pred).sum(), 0)
 
+    @unittest.skip('')
     def test_speed(self):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         word_embedding = nn.Embedding(30000, constants.d_model).to(device)
-        model = Model(word_embedding, constants.d_model, constants.d_model, constants.num_heads, constants.rate,
-                      998, 999).to(device)
+        model = Model(word_embedding, d_model=constants.d_model, num_layers=constants.num_layers,
+                      num_heads=constants.num_heads, rate=constants.rate, bos_id=998, eos_id=999).to(device)
         model_training = ModelTraining(model).to(device)
         print('Total params: %s' % pytorch_utils.count_parameters(model_training))
 
-        batch = 32
+        batch = 16
         x = torch.randint(1000, size=(batch, constants.MAX_LEN)).to(device)
         seq_len = torch.randint(low=30, high=100, size=(batch,)).to(device)
         for i in range(100):
@@ -50,7 +51,7 @@ class TestEncoder(unittest.TestCase):
             if i % 10 == 0:
                 model.eval()
                 model(x, constants.MAX_LEN)
-                print('Step: %s Loss: %.4f Duration: %.4f s' % (i, loss, end-start))
+                print('Step: %s Loss: %.4f Duration: %.4f s' % (i, loss, end - start))
 
 
 if __name__ == '__main__':
