@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from torch.nn import functional as F
 
 from model_def.T_LM.decoder_layer_customized import DecoderLayerCustomized
 from model_def.T_LM.layer_lm import LayerLM
@@ -13,16 +14,30 @@ class Model(nn.Module):
         self.decoder = nn.ModuleList([DecoderLayerCustomized(d_model, num_heads, rate) for _ in range(num_layers)])
         self.lm_layer = LayerLM(last_hidden_size=d_model, vocab_size=self.word_embedding.num_embeddings)
 
-    def forward(self, x, seq_len, *args):
+    def forward(self, initial_words, max_length, bos_id, eos_id, *args):
         """
 
-        :param x: (batch, seq_len)
-        :param seq_len: (batch)
+        :param initial_words: (1, initial_length)
+        :param max_length: scala int
         :param args:
         :return:
         """
-        logits = self.get_logits(x, seq_len)
-        return torch.argmax(logits, dim=-1)
+        assert initial_words.size(0) == 1
+
+        current_tok = -100
+
+        # (batch, initial_length + 1)
+        input_words = F.pad(initial_words, pad=(1, 0), value=bos_id)
+        input_words = F.pad(input_words, pad=(0, max_length-input_words.size(-1)), value=0)
+        current_length = initial_words.size(0) + 2
+        batch_size = initial_words.size(0)
+        # import pdb; pdb.set_trace()
+        while current_length < max_length and current_tok != eos_id:
+            logits = self.get_logits(input_words, seq_len=torch.ones(batch_size).int().to(initial_words.device) * current_length)
+            current_tok = torch.argmax(logits[:, current_length-1], dim=-1)
+            input_words[:, current_length-1] = current_tok
+            current_length += 1
+        return input_words
 
     def get_logits(self, x, seq_len):
         """
