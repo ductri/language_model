@@ -19,10 +19,14 @@ class TestModel(unittest.TestCase):
     def test_forward(self):
         word_embedding = nn.Embedding(1000, 512)
         model = Model(word_embedding, 512, 3, 8, 0.1)
-        batch_size = 2
+        model.eval()
+        batch_size = 1
 
-        initial_words = torch.randint(1000, size=(batch_size, 2))
+        initial_words = torch.randint(1000, size=(batch_size, 1))
+        import pdb; pdb.set_trace()
         output = model(initial_words, max_length=10, bos_id=1, eos_id=-1)
+
+        print(output)
         self.assertListEqual(list(output.size()), [batch_size, 10])
 
 

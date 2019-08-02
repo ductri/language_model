@@ -1,3 +1,5 @@
+import logging
+
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -39,5 +41,4 @@ class DecoderLayerCustomized(nn.Module):
         ffn_output = self.ffn(out1)
         ffn_output = self.dropout2(ffn_output)
         output = F.layer_norm(out1 + ffn_output, normalized_shape=[ffn_output.size(-1)])
-
         return output, attn_weights_block1

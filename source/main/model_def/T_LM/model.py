@@ -16,7 +16,7 @@ class Model(nn.Module):
 
     def forward(self, initial_words, max_length, bos_id, eos_id, *args):
         """
-
+        Used for prediction
         :param initial_words: (1, initial_length)
         :param max_length: scala int
         :param args:
@@ -24,17 +24,18 @@ class Model(nn.Module):
         """
 
         current_tok = torch.tensor([-100])
+        batch_size = initial_words.size(0)
+        seq_len = torch.ones(batch_size).int().to(initial_words.device) * max_length
 
         # (batch, initial_length + 1)
         input_words = F.pad(initial_words, pad=(1, 0), value=bos_id)
         input_words = F.pad(input_words, pad=(0, max_length-input_words.size(-1)), value=0)
-        current_length = initial_words.size(0) + 2
-        batch_size = initial_words.size(0)
-        # import pdb; pdb.set_trace()
-        while current_length < max_length and (current_tok != eos_id).sum().cpu() == 0:
-            logits = self.get_logits(input_words, seq_len=torch.ones(batch_size).int().to(initial_words.device) * current_length)
-            current_tok = torch.argmax(logits[:, current_length-1], dim=-1)
-            input_words[:, current_length-1] = current_tok
+        current_length = initial_words.size(0) + 1
+
+        while current_length < max_length and (current_tok != eos_id).sum().cpu() != 0:
+            logits = self.get_logits(input_words, seq_len=seq_len)
+            current_tok = torch.argmax(logits[:, current_length], dim=-1)
+            input_words[:, current_length] = current_tok
             current_length += 1
         return input_words
 

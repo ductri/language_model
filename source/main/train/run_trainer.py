@@ -41,7 +41,7 @@ if __name__ == '__main__':
     NUM_EPOCHS = 10
     NUM_WORKERS = 0
     PRINT_EVERY = 10
-    PREDICT_EVERY = 100
+    PREDICT_EVERY = 20
     EVAL_EVERY = 10000
     PRE_TRAINED_MODEL = ''
 
