@@ -19,12 +19,11 @@ class Model(nn.Module):
     def forward(self, initial_words, max_length,  *args):
         """
         Used for prediction
-        :param initial_words: (1, initial_length)
+        :param initial_words: (batch, initial_length)
         :param max_length: scala int
         :param args:
         :return:
         """
-
         current_tok = torch.tensor([-100])
         batch_size = initial_words.size(0)
         seq_len = torch.ones(batch_size).int().to(initial_words.device) * max_length

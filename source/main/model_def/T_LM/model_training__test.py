@@ -3,6 +3,7 @@ import time
 
 import torch
 from torch import nn
+from torch.nn import functional as F
 from naruto_skills import pytorch_utils
 
 from model_def.T_LM.model import Model
@@ -19,9 +20,9 @@ class TestEncoder(unittest.TestCase):
         model_training = ModelTraining(model).to(device)
         batch = 5
         max_len = 10
-        x = torch.randint(900, size=(batch, max_len)).to(device)
-        seq_len = torch.ones(batch).int().to(device) * max_len
-
+        x = torch.randint(900, size=(batch, max_len-1)).to(device)
+        x = F.pad(x, pad=(1, 0), value=998)
+        seq_len = torch.ones(batch).int().to(device) * (max_len-2)
         for i in range(200):
             loss = model_training.train_batch(x, seq_len)
             if i % 10 == 0:
@@ -42,7 +43,8 @@ class TestEncoder(unittest.TestCase):
         print('Total params: %s' % pytorch_utils.count_parameters(model_training))
 
         batch = 16
-        x = torch.randint(1000, size=(batch, constants.MAX_LEN)).to(device)
+        x = torch.randint(1000, size=(batch, constants.MAX_LEN-1)).to(device)
+        x = F.pad(x, pad=(1, 0), value=998)
         seq_len = torch.randint(low=30, high=100, size=(batch,)).to(device)
         for i in range(100):
             start = time.time()

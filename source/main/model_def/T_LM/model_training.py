@@ -27,8 +27,12 @@ class ModelTraining(nn.Module):
         :param seq_len: (batch)
         :return:
         """
-        source = F.pad(x, pad=(1, 0), value=self.model.bos_id)
-        target = F.pad(x, pad=(0, 1), value=self.model.eos_id)
+        # source = F.pad(x, pad=(1, 0), value=self.model.bos_id)
+        # target = F.pad(x, pad=(0, 1), value=self.model.eos_id)
+        assert x[0][0] == self.model.bos_id, self.model.bos_id
+
+        source = x[:, :-1]
+        target = x[:, 1:]
         seq_len = seq_len + 1
 
         # (batch, seq_len, vocab_size)
@@ -38,7 +42,7 @@ class ModelTraining(nn.Module):
 
         # (batch, seq_len)
         loss = self.loss_fn(logits, target)
-        max_len = x.size(1) + 1
+        max_len = source.size(1)
         loss_mask = pytorch_utils.length_to_mask(seq_len, max_len=max_len, dtype=torch.float)
         loss = torch.mul(loss, loss_mask)
         loss = torch.div(loss.sum(dim=1), seq_len.float())
