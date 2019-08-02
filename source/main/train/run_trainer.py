@@ -12,25 +12,32 @@ from train.trainer import train
 
 
 def tensor2text(x, seq_len):
-    pred = my_dataset.voc.idx2docs(x)
-    return [' '.join(doc.split()[:length]) for doc, length in zip(pred, seq_len)]
+    """
+
+    :param x: array numpy 2d
+    :param seq_len:
+    :return:
+    """
+    x = x.tolist()
+    pred = [my_dataset.voc.decode_ids(doc) for doc in x]
+    return pred
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    EXP_ID = '1.7'
+    EXP_ID = '1.3'
     ROOT_DIR = '/source/main/train/output/'
     BATCH_SIZE = 32
-    NUM_EPOCHS = 100
+    NUM_EPOCHS = 10
     NUM_WORKERS = 0
     PRINT_EVERY = 100
-    PREDICT_EVERY = 1000
-    EVAL_EVERY = 5000
+    PREDICT_EVERY = 5000
+    EVAL_EVERY = 10000
     PRE_TRAINED_MODEL = ''
 
     my_dataset.bootstrap()
-    train_loader, eval_loader = my_dataset.get_datasets(BATCH_SIZE)
+    train_loader, eval_loader = my_dataset.get_datasets_2(BATCH_SIZE)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     #device = torch.device('cpu')
