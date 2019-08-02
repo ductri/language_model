@@ -7,6 +7,7 @@ from naruto_skills import pytorch_utils
 
 from model_def.T_LM.model import Model
 from model_def.T_LM.model_training import ModelTraining
+from model_def.T_LM import constants
 
 
 class TestEncoder(unittest.TestCase):
@@ -14,34 +15,33 @@ class TestEncoder(unittest.TestCase):
     def test_forward(self):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         word_embedding = nn.Embedding(1000, 512).to(device)
-        model = Model(word_embedding, 512, 3, 8, 0.1).to(device)
+        model = Model(word_embedding, 512, 3, 8, 0.1, 998, 999).to(device)
         model_training = ModelTraining(model).to(device)
-        batch = 10
-        x = torch.randint(1000, size=(batch, 100)).to(device)
-        seq_len = torch.randint(low=10, high=100, size=(batch,)).to(device)
-        for i in range(100):
+        batch = 5
+        max_len = 10
+        x = torch.randint(900, size=(batch, max_len)).to(device)
+        seq_len = torch.ones(batch).int().to(device) * max_len
+
+        for i in range(200):
             loss = model_training.train_batch(x, seq_len)
             if i % 10 == 0:
                 model.eval()
-                pred = model(x, seq_len)
-
                 print('Step %s: Loss: %.4f' % (i, loss))
-                print('Input: %s' % (x[:3, :10], ))
-                print('Predict: %s' % (pred[:3, :10], ))
 
         model.eval()
-        pred = model(x, seq_len)
-        self.assertEqual((x[:, 1:10] != pred[:, :9]).sum(), 0)
+        pred = model(x[:, :3], max_len)
+        self.assertEqual((x != pred).sum(), 0)
 
     def test_speed(self):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        word_embedding = nn.Embedding(30000, 512).to(device)
-        model = Model(word_embedding, 512, 6, 8, 0.1).to(device)
+        word_embedding = nn.Embedding(30000, constants.d_model).to(device)
+        model = Model(word_embedding, constants.d_model, constants.d_model, constants.num_heads, constants.rate,
+                      998, 999).to(device)
         model_training = ModelTraining(model).to(device)
         print('Total params: %s' % pytorch_utils.count_parameters(model_training))
-        batch = 64
-        max_len = 100
-        x = torch.randint(1000, size=(batch, max_len)).to(device)
+
+        batch = 32
+        x = torch.randint(1000, size=(batch, constants.MAX_LEN)).to(device)
         seq_len = torch.randint(low=30, high=100, size=(batch,)).to(device)
         for i in range(100):
             start = time.time()
@@ -49,7 +49,7 @@ class TestEncoder(unittest.TestCase):
             end = time.time()
             if i % 10 == 0:
                 model.eval()
-                model(x, seq_len)
+                model(x, constants.MAX_LEN)
                 print('Step: %s Loss: %.4f Duration: %.4f s' % (i, loss, end-start))
 
 

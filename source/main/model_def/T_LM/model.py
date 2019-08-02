@@ -8,13 +8,15 @@ from model_def.transformer import helper
 
 
 class Model(nn.Module):
-    def __init__(self, word_embedding, d_model, num_layers, num_heads, rate):
+    def __init__(self, word_embedding, d_model, num_layers, num_heads, rate, bos_id, eos_id):
         super(Model, self).__init__()
         self.word_embedding = word_embedding
         self.decoder = nn.ModuleList([DecoderLayerCustomized(d_model, num_heads, rate) for _ in range(num_layers)])
         self.lm_layer = LayerLM(last_hidden_size=d_model, vocab_size=self.word_embedding.num_embeddings)
+        self.bos_id = bos_id
+        self.eos_id = eos_id
 
-    def forward(self, initial_words, max_length, bos_id, eos_id, *args):
+    def forward(self, initial_words, max_length,  *args):
         """
         Used for prediction
         :param initial_words: (1, initial_length)
@@ -28,16 +30,16 @@ class Model(nn.Module):
         seq_len = torch.ones(batch_size).int().to(initial_words.device) * max_length
 
         # (batch, initial_length + 1)
-        input_words = F.pad(initial_words, pad=(1, 0), value=bos_id)
-        input_words = F.pad(input_words, pad=(0, max_length-input_words.size(-1)), value=0)
-        current_length = initial_words.size(0) + 1
+        input_words = F.pad(initial_words, pad=(1, 0), value=self.bos_id)
+        input_words = F.pad(input_words, pad=(0, max_length-input_words.size(-1)+1), value=0)
+        current_length = initial_words.size(-1)
 
-        while current_length < max_length and (current_tok != eos_id).sum().cpu() != 0:
+        while current_length+1 <= max_length and (current_tok != self.eos_id).sum().cpu() != 0:
             logits = self.get_logits(input_words, seq_len=seq_len)
             current_tok = torch.argmax(logits[:, current_length], dim=-1)
-            input_words[:, current_length] = current_tok
+            input_words[:, current_length+1] = current_tok
             current_length += 1
-        return input_words
+        return input_words[:, 1:]
 
     def get_logits(self, x, seq_len):
         """

@@ -19,8 +19,7 @@ def train(training_model, train_loader, eval_loader, device, num_epoch=10, print
     def predict_and_print_sample(inputs):
         sample_size = 5
         input_tensors = [input_tensor[:sample_size] for input_tensor in inputs]
-        predict_tensor = model(input_tensors[0][:, :6], max_length=constants.MAX_LEN, bos_id=2, eos_id=3)
-        import pdb; pdb.set_trace()
+        predict_tensor = model(input_tensors[0][:, :6], max_length=constants.MAX_LEN, bos_id=bos_id, eos_id=eos_id)
         input_transformed = input_transform(input_tensors[0].cpu().numpy(), input_tensors[1].cpu().numpy())
         predict_transformed = output_transform(predict_tensor.cpu().numpy(), input_tensors[1].cpu().numpy())
 

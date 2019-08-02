@@ -1,5 +1,6 @@
 import torch
 from torch import nn, optim
+from torch.nn import functional as F
 from naruto_skills import pytorch_utils
 
 
@@ -8,7 +9,7 @@ class ModelTraining(nn.Module):
         super(ModelTraining, self).__init__()
         self.model = model
         self.loss_fn = nn.CrossEntropyLoss(reduction='none')
-        self.lr = 1e-2
+        self.lr = 4e-5
         self.optimizer = optim.Adam(params=self.model.parameters(), lr=self.lr)
 
     def forward(self, *args):
@@ -26,8 +27,9 @@ class ModelTraining(nn.Module):
         :param seq_len: (batch)
         :return:
         """
-        source = x[:, :-1]
-        target = x[:, 1:]
+        source = F.pad(x, pad=(1, 0), value=self.model.bos_id)
+        target = F.pad(x, pad=(0, 1), value=self.model.eos_id)
+        seq_len = seq_len + 1
 
         # (batch, seq_len, vocab_size)
         logits = self.model.get_logits(source, seq_len)
@@ -36,7 +38,7 @@ class ModelTraining(nn.Module):
 
         # (batch, seq_len)
         loss = self.loss_fn(logits, target)
-        max_len = x.size(1)-1
+        max_len = x.size(1) + 1
         loss_mask = pytorch_utils.length_to_mask(seq_len, max_len=max_len, dtype=torch.float)
         loss = torch.mul(loss, loss_mask)
         loss = torch.div(loss.sum(dim=1), seq_len.float())

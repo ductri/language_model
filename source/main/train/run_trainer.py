@@ -8,6 +8,7 @@ from naruto_skills import pytorch_utils
 from data_for_train import dataset as my_dataset
 from model_def.T_LM.model import Model
 from model_def.T_LM.model_training import ModelTraining
+from model_def.T_LM import constants
 from train.trainer import train
 
 
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     EXP_ID = '1.3'
     ROOT_DIR = '/source/main/train/output/'
     BATCH_SIZE = 32
-    NUM_EPOCHS = 10
+    NUM_EPOCHS = 1000
     NUM_WORKERS = 0
     PRINT_EVERY = 10
     PREDICT_EVERY = 20
@@ -50,7 +51,7 @@ if __name__ == '__main__':
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     #device = torch.device('cpu')
-    model = Model(Model.get_word_embedding(), d_model=640, num_layers=10, num_heads=10, rate=0.1)
+    model = Model(Model.get_word_embedding(), d_model=constants.d_model, num_layers=constants.num_layers, num_heads=constants.num_heads, rate=constants.rate)
     model.to(device)
     logging.info('Total trainable parameters: %s', pytorch_utils.count_parameters(model))
     model_training = ModelTraining(model)
@@ -73,4 +74,4 @@ if __name__ == '__main__':
 
         logging.info('Load pre-trained model from %s successfully', PRE_TRAINED_MODEL)
 
-    train(model_training, train_loader, eval_loader, device=device, num_epoch=NUM_EPOCHS, print_every=PRINT_EVERY, predict_every=PREDICT_EVERY, eval_every=EVAL_EVERY, input_transform=tensor2text, output_transform=tensor2text, init_step=init_step, my_logger=my_logger, training_checker=training_checker)
+    train(model_training, train_loader, eval_loader, device=device, num_epoch=NUM_EPOCHS, print_every=PRINT_EVERY, predict_every=PREDICT_EVERY, eval_every=EVAL_EVERY, input_transform=tensor2text, output_transform=tensor2text, init_step=init_step, my_logger=my_logger, training_checker=training_checker, bos_id=2, eos_id=3)
