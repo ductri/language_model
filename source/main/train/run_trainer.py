@@ -36,18 +36,18 @@ def tensor2text(x, seq_len):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    EXP_ID = '1.3'
+    EXP_ID = '1.4'
     ROOT_DIR = '/source/main/train/output/'
     BATCH_SIZE = 32
     NUM_EPOCHS = 1000
     NUM_WORKERS = 0
-    PRINT_EVERY = 10
-    PREDICT_EVERY = 20
+    PRINT_EVERY = 100
+    PREDICT_EVERY = 5000
     EVAL_EVERY = 10000
     PRE_TRAINED_MODEL = ''
 
     my_dataset.bootstrap()
-    train_loader, eval_loader = my_dataset.get_datasets(BATCH_SIZE)
+    train_loader, eval_loader = my_dataset.get_datasets_2(BATCH_SIZE)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = Model(Model.get_word_embedding(), d_model=constants.d_model, num_layers=constants.num_layers, num_heads=constants.num_heads, rate=constants.rate, bos_id=2, eos_id=3)
