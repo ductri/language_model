@@ -49,6 +49,8 @@ class Model(nn.Module):
         :param args:
         :return:
         """
+        assert x[0][0] == self.bos_id, self.bos_id
+
         x = self.word_embedding(x)
         dec_out = x
         look_ahead_mask = helper.create_look_ahead_mask(x.size(1)).to(x.device)
