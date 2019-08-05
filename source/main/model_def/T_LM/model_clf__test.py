@@ -56,7 +56,7 @@ class TestModelCLF(unittest.TestCase):
         prob = model.model_clf(x, seq_len)
         pred = prob.argmax(dim=-1)
         pred_np = pred.cpu().numpy()
-        self.assertEqual((pred_np != target).sum(), 0)
+        self.assertEqual((pred_np != target.cpu().numpy()).sum(), 0)
 
 
 if __name__ == '__main__':
